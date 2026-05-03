@@ -38,7 +38,7 @@ document.getElementById("noticeForm").addEventListener("submit", async function(
         formData.append("file", fileInput.files[0]);
     }
     try{
-        const res = await fetch("http://localhost:8080/api/admin/notice", {
+        const res = await fetch("https://bmnhs-school-management-1.onrender.com/api/admin/notice", {
                 method: "POST",
                 headers: {
                     "Authorization": "Bearer " + token

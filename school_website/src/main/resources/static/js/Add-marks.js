@@ -48,7 +48,7 @@ function submitMarks() {
             totalMarks: parseFloat(total)
         };
 
-        fetch(`http://localhost:8080/api/teacher/add-marks/${course}/${roll}`, {
+        fetch(`https://bmnhs-school-management-1.onrender.com/api/teacher/add-marks/${course}/${roll}`, {
             method: "POST",
             headers: {
                 "Authorization": "Bearer " + token,

@@ -92,7 +92,7 @@ function loadStudents(className) {
     fetch(`/api/students?class=${className}`,{
     method: "GET",
     headers: {
-        "Authorization": "Bearer "+token,
+        "Authorization": "Bearer " +token,
         "Content-Type": "application/json"
         }
     })

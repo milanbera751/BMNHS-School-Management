@@ -1,7 +1,7 @@
 const loader= document.getElementById("loader-container");
 console.log("JS load");
 loader.style.display="flex";
-fetch("http://localhost:8080/api/teacher/staff")
+fetch("https://bmnhs-school-management-1.onrender.com/api/teacher/staff")
 .then(res => {
     console.log("Status:", res.status);
     return res.json();

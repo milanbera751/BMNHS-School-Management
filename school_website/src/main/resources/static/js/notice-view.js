@@ -2,7 +2,7 @@
 async function loadNotices() {
     const loader= document.getElementById("loader-container");
     try {
-        const res = await fetch("http://localhost:8080/api/notices");
+        const res = await fetch("https://bmnhs-school-management-1.onrender.com/api/notices");
 
         const data = await res.json();
 
@@ -58,7 +58,7 @@ async function loadNotices() {
 
 // ✅ DOWNLOAD FILE (NO AUTH)
 function downloadFile(fileName) {
-    fetch("http://localhost:8080/api/notices/file/" + fileName)
+    fetch("https://bmnhs-school-management-1.onrender.com/api/notices/file/" + fileName)
         .then(res => res.blob())
         .then(blob => {
             const url = window.URL.createObjectURL(blob);

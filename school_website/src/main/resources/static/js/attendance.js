@@ -1,6 +1,6 @@
 const token = localStorage.getItem("token");
 
-fetch("/api/students/attendance", {
+fetch("https://bmnhs-school-management-1.onrender.com/api/students/attendance", {
     headers: {
         "Authorization": "Bearer " + token
     }

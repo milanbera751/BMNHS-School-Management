@@ -43,7 +43,7 @@ function upload() {
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://localhost:8080/api/gallery/add", {
+        fetch("https://bmnhs-school-management-1.onrender.com/api/gallery/add", {
             method: "POST",
             headers: { "Authorization": "Bearer " + token },
             body: formData

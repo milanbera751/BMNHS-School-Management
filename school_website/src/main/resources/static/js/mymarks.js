@@ -6,7 +6,7 @@ function fetchMarks() {
     const token = localStorage.getItem("token");
     const marksBody = document.getElementById("marksBody");
 
-    fetch("http://localhost:8080/api/students/my-marks", {
+    fetch("https://bmnhs-school-management-1.onrender.com/api/students/my-marks", {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token,

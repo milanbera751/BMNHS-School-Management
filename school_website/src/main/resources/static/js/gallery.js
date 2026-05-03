@@ -4,7 +4,7 @@ const container = document.getElementById("gallery");
 // 1. Show loader immediately
 loader.style.display = "flex";
 
-fetch("http://localhost:8080/api/gallery")
+fetch("https://bmnhs-school-management-1.onrender.com/api/gallery")
     .then(res => {
         if (!res.ok) throw new Error("Server error: " + res.status);
         return res.json();

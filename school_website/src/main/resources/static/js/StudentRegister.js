@@ -23,7 +23,7 @@ async function addStudent() {
         msg.innerText="Processing.....";
 
     try {
-        const res = await fetch("http://127.0.0.1:8080/api/admin/register-student", {
+        const res = await fetch("https://bmnhs-school-management-1.onrender.com/api/admin/register-student", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

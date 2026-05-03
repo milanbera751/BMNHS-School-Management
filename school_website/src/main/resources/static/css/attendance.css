@@ -1,0 +1,131 @@
+/* PAGE BACKGROUND */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #dfe9f3);
+    min-height: 100vh;
+        background: url("../image/school.jpeg") no-repeat center center/cover;
+}
+/* MAIN CONTAINER (WIDER FOR STUDENT LIST) */
+.form-container {
+    width: 90%;
+    max-width: 700px;   /* Increased */
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* TITLE */
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* INPUTS */
+.form-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+/* INPUT FOCUS */
+.form-container input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52,152,219,0.3);
+}
+
+/* STUDENT LIST BOX */
+#studentContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+/* EACH STUDENT ROW */
+.student-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    transition: 0.2s;
+}
+
+/* REMOVE LAST BORDER */
+.student-row:last-child {
+    border-bottom: none;
+}
+
+/* HOVER EFFECT */
+.student-row:hover {
+    background: #f1f7ff;
+}
+
+/* CHECKBOX */
+.student-row input {
+    transform: scale(1.2);
+    margin-right: 10px;
+}
+
+/* STUDENT NAME */
+.student-row label {
+    flex: 1;
+    cursor: pointer;
+}
+
+/* BUTTON GROUP */
+.button-group {
+    margin-top: 15px;
+}
+
+/* BUTTONS */
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    background: #3498db;
+    border: none;
+    color: white;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* HOVER */
+.form-container button:hover {
+    background: #2980b9;
+}
+
+/* SECONDARY BUTTONS */
+button:nth-child(2) {
+    background: #27ae60;
+}
+button:nth-child(2):hover {
+    background: #1e8449;
+}
+
+button:nth-child(3) {
+    background: #e74c3c;
+}
+button:nth-child(3):hover {
+    background: #c0392b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .form-container {
+        padding: 20px;
+    }
+}

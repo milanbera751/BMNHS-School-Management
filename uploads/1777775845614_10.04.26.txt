@@ -1,0 +1,609 @@
+package com.example.firstproject;
+
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+
+@RestController
+public class ProjectController {
+
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
+    private final SellerRequestRepository sellerRequestRepository;
+    private final OrderRepository orderRepository;
+    private final ReviewRepository reviewRepository;
+    private final CartRepository cartRepository;
+    public ProjectController(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,
+                             BookRepository bookRepository,SellerRequestRepository sellerRequestRepository,
+                             OrderRepository orderRepository,ReviewRepository reviewRepository,
+                             CartRepository cartRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.bookRepository = bookRepository;
+        this.sellerRequestRepository= sellerRequestRepository;
+        this.orderRepository = orderRepository;
+        this.reviewRepository=reviewRepository;
+        this.cartRepository=cartRepository;
+    }
+    //===================HOME================================
+    @GetMapping("/home")
+    public String home(){
+        return "Welcome to the Home Page!";
+    }
+
+    //=======================REGISTRATION=========================
+    @PostMapping("/register")
+    public String registerUser(@RequestBody User user){
+        User existingUSer=userRepository.findByEmail(user.getEmail());
+        if(existingUSer!=null){
+            return "User already exists";
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if(user.getRole()==null || user.getRole().isEmpty()){
+            user.setRole("ROLE_USER");
+        }
+        userRepository.save(user);
+        return "Registration Successful";
+    }
+    //======================LOGIN=========================
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody User user){
+        User existingUser=userRepository.findByEmail(user.getEmail());
+        if(existingUser==null){
+            throw new RuntimeException("User not found");}
+        if(!existingUser.isEnabled()){
+            throw new RuntimeException("User is disabled by admin");
+        }
+        if(passwordEncoder.matches(user.getPassword(),existingUser.getPassword())){
+            String token = JwtUtil.generateToken(existingUser.getEmail(),existingUser.getRole());
+            return new LoginResponse("Bearer "+token,existingUser.getEmail(),existingUser.getRole());
+        }else{
+            throw new RuntimeException("wrong password");
+        }
+    }
+    //=======================admin panel===================
+    @GetMapping("/admin/orders")
+    public List<Order> getAllOrders(){
+        return orderRepository.findAll();
+    }
+//====================admin update order status=======================
+    @PutMapping("/admin/order/status/{orderId}")
+    @Transactional
+    public String updateorderstatus(@PathVariable int orderId,@RequestParam String status){
+        Order order=orderRepository.findById(orderId).orElse(null);
+        if(order==null){
+            throw new RuntimeException("Order Not Found");
+        }
+        order.setStatus(status);
+        orderRepository.save(order);
+        return "Order Updated"+status;
+    }
+    //=====================UPDATE PROFILE=====================
+    @PutMapping("/profile/update")
+    public String updateProfile(@RequestBody updateprofile req) {
+
+        String email = (String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return "User not found";
+        }
+        user.setName(req.getName());
+        user.setPhone(req.getPhone());
+//
+        if(req.getEmail()!=null && !req.getEmail().isEmpty()){
+            user.setEmail(req.getEmail());
+        }
+//
+        userRepository.save(user);
+        return "Profile updated";
+    }
+    //========================see profile pic==============================
+    @GetMapping("/profile/get")
+    public ProfileResponse getprofile(){
+        String email=(String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User user=userRepository.findByEmail(email);
+
+        if(user==null){
+            throw new RuntimeException("User not found");
+        }
+        ProfileResponse dto=new ProfileResponse();
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setPhone(user.getPhone());
+
+        if(user.getProfilePicture()!=null){
+            dto.setProfileImage("http://localhost:8080/profile/image/" + user.getProfilePicture());
+        }
+        return dto;
+    }
+    //======================PROFILE PIC VIEW==============================
+    @GetMapping("/profile/image/{filename}")
+    public ResponseEntity<Resource> getProfileImage(@PathVariable String filename)throws IOException {
+        Path path=Paths.get("uploads").resolve(filename).normalize();
+        UrlResource resource=new UrlResource(path.toUri());
+        if(!resource.exists() || !resource.isReadable()){
+            throw new RuntimeException("File not found"+filename);
+        }
+        return  ResponseEntity.ok().body(resource);
+    }
+    //====================CHANGE/UPDATE PASSWORD=========================
+    @PutMapping("/profile/password")
+    public String changePassword(@RequestBody ChangePasswordRequest req) {
+        String email = (String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return "User not found";
+        }
+        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
+            return "Old password is incorrect";
+        }
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+        return "Password changed";
+    }
+    //=====================UPLODE PROFILE PICTURE====================
+    @PostMapping("/profile/upload/picture")
+    public String uploadProfilepicture(@RequestParam("file") MultipartFile file){
+        try{
+            String email= (String) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+            User user = userRepository.findByEmail(email);
+            if(user==null){
+                return "User not found";
+            }
+            String fileName = System.currentTimeMillis()+"_"+file.getOriginalFilename();
+            String uploadDir="uploads/";
+            File uploadPath=new File(uploadDir);
+
+            if(!uploadPath.exists()){
+                uploadPath.mkdir();
+            }
+
+            Path filepath= Paths.get(uploadDir+fileName);
+            Files.write(filepath,file.getBytes());
+
+            user.setProfilePicture(fileName);
+            userRepository.save(user);
+            return "Profile picture uploaded"+fileName;
+        }
+        catch (Exception e){
+            return "Upload Failed";
+        }
+    }
+
+    //========================= SELLER ADD BOOK=========================================
+    @PostMapping("/seller/book")
+    public String addBook(@RequestBody Book book){
+        String email=(String) getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User currentUser=userRepository.findByEmail(email);
+        book.setUser(currentUser);
+        book.setStatus("AVAILABLE");
+        bookRepository.save(book);
+        return "Book added";
+    }
+    //====================== USER BOOK SEARCH ========================================
+    @GetMapping("/books/search")
+    public Page<BookResponse> searchBook(@RequestParam String title,
+                                         Pageable pageable) {
+
+        Page<Book> books =
+                bookRepository.findByTitleContainingIgnoreCaseAndStatus(
+                        title, "AVAILABLE", pageable);
+
+        return books.map(book -> {
+            BookResponse dto = new BookResponse();
+            dto.setTitle(book.getTitle());
+            dto.setAuthor(book.getAuthor());
+            dto.setPrice(book.getPrice());
+            dto.setDescription(book.getDescription());
+
+            User user = book.getUser();
+            if (user != null) {
+                dto.setSellerName(user.getName());
+                dto.setSellerPhone(user.getPhone());
+            }
+            return dto;
+        });
+    }
+//=============================SELLER SEE OWN BOOK===============================
+    @GetMapping("/seller/books")
+    public List<Book> getMyBooka(){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        User seller=userRepository.findByEmail(email);
+        return bookRepository.findByUser(seller);
+    }
+//=============================SELLER UPDATE BOOK=================================
+    @PutMapping("/seller/book/update/{id}")
+    public String updateBook(@PathVariable int id, @RequestBody Book Updatebook){
+        Book book=bookRepository.findById(id).orElse(null);
+        if(book==null){
+            return "book not found";
+        }
+        String email=(String) getContext().getAuthentication().getPrincipal();
+        User currentUser=userRepository.findByEmail(email);
+        if(book.getUser().getId()!= currentUser.getId()){
+            return "Not allowed to update";
+        }
+        book.setTitle(Updatebook.getTitle());
+        book.setAuthor(Updatebook.getAuthor());
+        book.setPrice(Updatebook.getPrice());
+        book.setDescription(Updatebook.getDescription());
+        bookRepository.save(book);
+        return "Updated";
+    }
+    //===============================SELLER DELETE OWN BOOK============================
+    @DeleteMapping("/seller/book/delete/{id}")
+    public String sellerdeleteBook(@PathVariable int id) {
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book == null) {
+            return "book not found";
+        }
+        String email = (String) getContext().getAuthentication().getPrincipal();
+        User currentuser = userRepository.findByEmail(email);
+        if (book.getUser().getId() != currentuser.getId()) {
+            return "Not allowed to delete book";
+        }
+        bookRepository.delete(book);
+        return "Book deleted";
+    }
+    //=====================seller orders======================
+    @GetMapping("/seller/orders")
+    public List<Order> getSellerOrders(){
+        String email=SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        return orderRepository.findAll().stream().filter(o->
+                o.getBook().getUser().getEmail().equals(email))
+                .toList();
+    }
+    //=====================seller order status=================
+    @PutMapping("seller/order/status/{orderId}")
+    @Transactional
+    public String updateOrderStatus(@PathVariable int orderId,@RequestParam String status){
+        String email= getContext()
+                .getAuthentication()
+                .getName();
+        Order order=orderRepository.findById(orderId).orElse(null);
+        if(order.getBook()==null || order.getBook().getUser()==null){
+            throw new RuntimeException("Invalid order data");
+        }
+        if(!order.getBook().getUser().getEmail().equals(email)){
+            throw new RuntimeException("not your order");
+        }
+        order.setStatus(status.toUpperCase());
+        orderRepository.save(order);
+        return "Order updated";
+    }
+    //===================pagination============================
+    @GetMapping("/books")
+    public List<Book> getBooksForSeller(Pageable pageable) {
+        return bookRepository.findAll(pageable).getContent();
+    }
+    //====================user apply==================================
+    @PostMapping("/user/apply-seller")
+    public String applySeller(@RequestBody SellerRequest request){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        request.setEmail(email);
+        request.setStatus(request.getStatus());
+        sellerRequestRepository.save(request);
+        return "Request submitted to admin";
+    }
+    //=======================ADMIN CHECK ALL REQUESTS=============================
+    @GetMapping("/admin/seller-requests")
+    public List<SellerRequest> getSellerRequestsForAdmin(){
+        return sellerRequestRepository.findAll();
+    }
+    //===========================ADMIN APPROVED =================================
+    @PutMapping("/admin/approve/{id}")
+    public String approveSeller(@PathVariable int id){
+        SellerRequest request=sellerRequestRepository.findById(id).orElse(null);
+        if(request==null){
+            return "Request not found";
+        }
+        User user=userRepository.findByEmail(request.getEmail());
+        if(user==null){
+            return "User not found";
+        }
+        user.setRole("ROLE_SUBADMIN");
+        userRepository.save(user);
+
+        request.setStatus("APPROVED");
+        sellerRequestRepository.save(request);
+
+        return "user promoted to SUBADMIN";
+    }
+    //=======================ADMIN REJECTED================================
+    @PutMapping("/admin/reject/{id}")
+    public String rejectSeller(@PathVariable int id){
+        SellerRequest request=sellerRequestRepository.findById(id).orElse(null);
+        if(request==null){
+            return "Request not found";
+        }
+
+        request.setStatus("REJECTED");
+        sellerRequestRepository.save(request);
+
+        return "Request rejected";
+    }
+
+    //admin control
+//========================ADMIN BLOCKED USER=======================
+    @DeleteMapping("/admin/user/{id}/block")
+    public String blockeduser(@PathVariable int id){
+        User user=userRepository.findById(id).orElse(null);
+        if(user==null){
+            return "User not found";
+        }
+        user.setEnabled(false);
+        userRepository.save(user);
+        return "User blocked";
+    }
+    //=====================ADMIN FATCH ALL DETAILS OF USER======================================
+    @GetMapping("/admin/users")
+    public List<User> getUsers(){
+        return userRepository.findAll();
+    }
+    //==========================ADMIN UPDATE ROLE==============================
+    @PutMapping("/admin/update-role/{id}")
+    public String adminupdaterole(@PathVariable int id, @RequestParam String role){
+        User user= userRepository.findById(id).orElse(null);
+        if(user==null){return "user not found";}
+        user.setRole(role);
+        userRepository.save(user);
+        return "role update";
+    }
+    //===========================ADMIN ACCESS ALL BOOK====================
+    @GetMapping("/admin/books")
+    public List<Book> getAllBooksAdmin(){
+        return bookRepository.findAll();
+    }
+    //==========================ADMIN DELETE BOOK==========================
+    @DeleteMapping("/admin/book/{id}")
+    public String deletebook(@PathVariable int id) {
+        bookRepository.deleteById(id);
+        return "Book deleted by admin";
+    }
+    //==========================USER BUY BOOK==============================
+    @PostMapping("/order/buy/{bookId}")
+    public String buyBook(@PathVariable int bookId){
+        String email=SecurityContextHolder
+//        User loggeduser=(User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+//        String email=loggeduser.getEmail();
+
+        User buyer=userRepository.findByEmail(email);
+        Book book=bookRepository.findById(bookId).orElse(null);
+
+        if(book==null){
+            throw new RuntimeException("Book not found");
+        }
+        if(!"AVAILABLE".equals(book.getStatus())){
+            throw new RuntimeException("Book is not available");
+        }
+        if(book.getUser().getId()==buyer.getId()){
+            throw new RuntimeException("you can not buy your own book");
+        }
+        if(book.getQuantity()<=0){
+            throw new RuntimeException("out of stock");
+        }
+        Order order=new Order();
+        order.setBuyer(buyer);
+        order.setBook(book);
+        order.setQuantity(1);
+        order.setPrice(book.getPrice());
+        order.setStatus("PLACED");
+        orderRepository.save(order);
+        book.setQuantity(book.getQuantity()-1);
+//      return new OrderResponse(order.getId(),"Order placed successfully");
+/*        OrderResponse res=new OrderResponse();
+        res.setOrderId(order.getId());
+        res.setMessage("Order placed successfully");*/
+        if(book.getQuantity()==0){
+            book.setStatus("SOLD");
+        }
+        bookRepository.save(book);
+        return "Order placed Successfully";
+    }
+    //========================ORDER HISTORY=================================
+    @GetMapping("/order/history")
+    public Stream<OrderResponse> getOrderHistory(){
+
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user=userRepository.findByEmail(email);
+
+        List<Order> orders=orderRepository.findByBuyer(user);
+        return orders.stream().map(order -> {
+
+            OrderResponse res=new OrderResponse();
+
+            res.setOrderId(order.getId());
+            res.setMessage("Order fetched");
+
+            res.setBookTitle(order.getBook().getTitle());
+            res.setPrice(order.getPrice());
+            res.setStatus(order.getStatus());
+
+            return res;
+        });
+
+    }
+    //review api
+//=====================USER REVIEW BOOK=======================
+    @PostMapping("/review/{bookId}")
+    public String reviewBook(@PathVariable int bookId,@RequestBody ReviewRequest req){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user=userRepository.findByEmail(email);
+        Book book=bookRepository.findById(bookId).orElse(null);
+
+        if(book==null){
+            return "Book not found";
+        }
+        if(req.getRating()<1 || req.getRating()>5){
+            return "Rating must be between 1 and 5";
+        }
+        Review review=new Review();
+        review.setRating(req.getRating());
+        review.setComments(req.getComment());
+        review.setUser(user);
+        review.setBook(book);
+
+        reviewRepository.save(review);
+        return "Review Added Successfully";
+    }
+    //==============SEE ALL REVIEWS==========================
+    @GetMapping("/reviews/{bookId}")
+    public List<Review> getReviews(@PathVariable int bookId){
+        return reviewRepository.findByBook(bookId);
+    }
+    //=====================ADD ITEM CART=========================
+    @PostMapping("/user/cart/add")
+    public String addCart(@RequestParam int bookId,@RequestParam int quantity){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+//        Book book=bookRepository.findById(bookId).orElse(null);
+//        if(book==null){return "Book not found";}
+//        if(book.getQuantity()<quantity){
+//            return "Not enough stock";}
+//        book.setQuantity((book.getQuantity()-quantity));
+//        bookRepository.save(book);
+        Cart cart=new Cart();
+        cart.setUserEmail(email);
+        cart.setBookId(bookId);
+        cart.setQuantity(quantity);
+        cartRepository.save(cart);
+
+        return "Item added to cart";
+    }
+    //===================SEE ITEM CART ==================================
+    @GetMapping("/user/cart")
+    public List<Cart> getCarts(){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return cartRepository.findByUserEmail(email);
+    }
+    //======================REMOVE ITEM CART=========================
+    @DeleteMapping("/user/cart/remove")
+    public String removeitem(@RequestParam int bookId,@RequestParam int quantity){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Cart cart=cartRepository.findByUserEmailAndBookId(email,bookId);
+        if(cart==null){
+            return "Item not found";
+        }
+        if(quantity<=0){
+            return "Quantity must be greater than 0";
+        }
+        if(cart.getQuantity()<quantity){
+            return "Quantity must be greater than or equal to quantity";
+        }
+        int remaning=cart.getQuantity()-quantity;
+        if(remaning>0){
+            cart.setQuantity(remaning);
+            cartRepository.save(cart);
+        }else {
+            cartRepository.delete(cart);
+        }
+        return "item remove and updeted";
+    }
+
+    //=============================CHECK OUT===================================
+    @PostMapping("/user/checkout")
+    @Transactional
+    public String checkout(){
+        String email=SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        List<Cart> cartList=cartRepository.findByUserEmail(email);
+
+        if(cartList.isEmpty()){
+            return "Cart is Empty";
+        }
+        for(Cart cart:cartList){
+            Book book=bookRepository.findById(cart.getBookId()).orElse(null);
+            if(book==null){
+                continue;
+            }
+            if(book.getQuantity()<cart.getQuantity()){
+                return "Not enough stock";
+            }
+            book.setQuantity(book.getQuantity()-cart.getQuantity());
+            bookRepository.save(book);
+            User user=userRepository.findByEmail(email);
+            Order order=new Order();
+            order.setBuyer(user);
+            order.setBook(book);
+            order.setQuantity(cart.getQuantity());
+            order.setPrice(book.getPrice()*cart.getQuantity());
+
+            order.setStatus("PLACED");
+            orderRepository.save(order);
+        }
+        return "order placed successfully";
+    }
+    //=======================user see orders======================
+    @GetMapping("/user/orders")
+    public List<Order> myOrders(){
+        String email=(String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user=userRepository.findByEmail(email);
+        return orderRepository.findByBuyer(user);
+    }
+    //====================user cancle order======================
+    
+
+}

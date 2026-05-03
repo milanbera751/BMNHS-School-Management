@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Student Marks</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/attendance.css">
+    <link rel="stylesheet" href="../css/loder.css">
+</head>
+<body class="center">
+
+<div id="loader-container">
+    <div class="loader"></div>
+</div>
+<div id="toast-container"></div>
+<div class="sidebar">
+    <h2>TEACHER</h2>
+    <a href="../Dashboard/teacher.html">Dashboard</a>
+    <a href="../pages/add-marks.html" class="active">Marks</a>
+    <a href="../pages/Add_attendance.html">Attendance</a>
+    <a href="../pages/teacher_notice.html">Notices</a>
+    <a href="#">My Classes</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+    <div class="form-container">
+        <h1>Teacher Portal: Enter Marks</h1>
+        <hr>
+        <label for="courseInput">Select Course/Class:</label>
+        <input list="courseList" id="courseInput" placeholder="Select Course">
+        <datalist id="courseList">
+            <option value="5">
+            <option value="6">
+            <option value="7">
+            <option value="8">
+            <option value="9">
+            <option value="10">
+        </datalist>
+
+        <label for="studentRoll">Roll Number:</label>
+        <input type="text" id="studentRoll" placeholder="Enter Roll Number">
+
+        <hr>
+
+        <input list="subjectList" id="subjectName" placeholder="Select Subject">
+        <datalist id="subjectList">
+            <option value="Mathematics">
+            <option value="English">
+            <option value="Computer Science">
+            <option value="Physics">
+        </datalist>
+
+        <div style="display: flex; gap: 20px; margin-top: 15px;">
+            <div style="flex: 1;">
+                <label>Marks Obtained:</label>
+                <input type="number" id="marksObtained" placeholder="e.g., 45">
+            </div>
+            <div style="flex: 1;">
+                <label>Total Marks:</label>
+                <input type="number" id="totalMarks" placeholder="e.g., 50">
+            </div>
+        </div>
+
+        <br>
+
+        <div class="button-group">
+            <button onclick="submitMarks()">Submit Marks</button>
+            <button onclick="clearForm()" style="background-color: #6c757d;">Clear Form</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/Add-marks.js"></script>
+<script>
+
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+Dirb is a web content scanner used to discover hidden files, directories, and pages on web servers. It is commonly included in penetration testing distributions like Kali Linux. Below are the steps to use Dirb effectively.
+>>dirb http://example.com/
+
+Tools like Gobuster or Dirb can be used to perform directory brute-forcing. This method systematically attempts to discover pages that are not linked in the main site navigation but still respond to HTTP requests. In the case of FakeBank:
+>>gobuster dir -u http://fakebank.thm -w wordlist.txt
+
+
+
+create table Customer(
+CustomerId int Primary Key,
+Customername varchar2(10),
+ContactName varchar2(15),
+Address varchar2(12),
+Pin number(6),
+Country varchar2(10)
+);
+
+create table Order_detail(
+OrderId int Primary Key,
+OrderPlatfrom varchar2(15),
+Orderdate Date,
+OrderStatus varchar2(15)
+);
+
+ insert into Order_detail (Orderid,orderplatfrom,orderdate,orderstatus) values(1020,'Flipkart','21-02-26','Delivered');
+
+insert into Order_detail (Orderid,OrderPlatfrom,orderdate,orderstatus) values(1021,'Amazon',Date '2026-02-02','Shipped');
+insert into Order_detail (Orderid,OrderPlatfrom,orderdate,orderstatus) values(1022,'Mesho',Date '2026-02-02','OrderConfirm');
+insert into Order_detail (Orderid,OrderPlatfrom,orderdate,orderstatus) values(1026,'Myntra',Date '2026-02-03','Pending payment');
+
+
+create table Orders (
+  ordersid int(5),
+  customerid int,
+  orderdate date
+  );

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/loder.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+<div id="loader-container">
+    <div class="loader"></div>
+</div>
+<div id="toast-container"></div>
+<!-- Background Overlay -->
+<div class="overlay">
+
+    <!-- Login Box -->
+    <div class="login-box">
+
+        <div class="icon">
+            <i class="fa-solid fa-user"></i>
+        </div>
+
+        <h2>Login</h2>
+        <p class="subtitle">Please enter your credentials</p>
+
+        <form id="loginForm">
+
+<!--            <label>Role</label>-->
+<!--            <select id="role">-->
+<!--                <option value="">Select Role</option>-->
+<!--                <option value="student">STUDENT</option>-->
+<!--                <option value="teacher">TEACHER</option>-->
+<!--                <option value="admin">ADMIN</option>-->
+<!--            </select>-->
+
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+
+            <div class="extra">
+                <label><input type="checkbox"> Remember</label>
+                <a href="#" id="forgotLink">Forgot?</a>
+            </div>
+
+            <button type="submit">Login</button>
+            <p id="msg"></p>
+
+        </form>
+
+    </div>
+</div>
+<script src="js/login.js"></script>
+</body>
+</html>

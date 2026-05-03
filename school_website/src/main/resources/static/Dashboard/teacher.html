@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/loder.css">
+
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="sidebar">
+    <h2>TEACHER</h2>
+    <a href="#">Dashboard</a>
+    <a href="../pages/add-marks.html">Marks</a>
+    <a href="../pages/Add_attendance.html">Attendance</a>
+    <a href="../pages/teacher_notice.html">Notices</a>
+    <a href="#">My Classes</a>
+    <a href="../index.html" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+    <h1>Teacher Panel</h1>
+
+    <div class="card">My Classes</div>
+    <div class="card" onclick="window.location.href='../pages/add-marks.html'">Add Marks</div>
+    <div class="card" onclick="window.location.href='../pages/Add_attendance.html'">Attendance</div>
+    <div class="card" onclick="window.location.href='../pages/addphoto.html'">Add Photo</div>
+    </div>
+</div>
+
+<script src="../js/dashboard.js"></script>
+<script>
+    checkAuth("TEACHER");
+</script>
+</body>
+</html>

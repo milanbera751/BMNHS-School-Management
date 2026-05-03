@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+</head>
+<body>
+<div class="sidebar">
+    <h2>STUDENT</h2>
+    <a href="../Dashboard/student.html">Dashboard</a>
+    <a href="../pages/marks.html">My Marks</a>
+    <a href="../pages/attendance.html">Attendance</a>
+    <a href="../pages/profile.html">Profile</a>
+    <a href="../pages/Notice_view.html">Notices</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <div class="topbar">
+        <h1>Attendance Page</h1>
+    </div>
+
+    <div class="table-container">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Total Class</th>
+                <th>Attend Class</th>
+                <th>Percentage</th>
+            </tr>
+            </thead>
+            <tbody id="attendanceTable"></tbody>
+        </table>
+    </div>
+
+</div>
+<script src="../js/attendance.js"></script>
+<script src="../js/logout.js"></script>
+</body>
+</html>

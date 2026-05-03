@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance</title>
+<!--    <link rel="stylesheet" href="../css/style.css">-->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/attendance.css">
+    <link rel="stylesheet" href="../css/loder.css">
+</head>
+<body class="center">
+<div id="loader-container">
+    <div class="loader"></div>
+</div>
+<div id="toast-container"></div>
+<div class="sidebar">
+    <h2>TEACHER</h2>
+    <a href="../Dashboard/teacher.html">Dashboard</a>
+    <a href="../pages/add-marks.html">Marks</a>
+    <a href="../pages/Add_attendance.html">Attendance</a>
+    <a href="../pages/teacher_notice.html">Notices</a>
+    <a href="#">My Classes</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+    <div class="form-container">
+        <h2>Mark Attendance</h2>
+
+        <!-- CLASS -->
+        <input list="classList" id="classInput" placeholder="Select Class">
+        <datalist id="classList">
+            <option value="5">
+            <option value="6">
+            <option value="7">
+            <option value="8">
+            <option value="9">
+            <option value="10">
+        </datalist>
+
+        <!-- SUBJECT -->
+        <input list="subjectList" id="subject" placeholder="Subject">
+        <datalist id="subjectList"></datalist>
+
+        <!-- DATE -->
+        <input type="date" id="date">
+
+        <!-- STUDENT LIST -->
+        <h3>Students</h3>
+        <div id="studentContainer"></div>
+
+        <br>
+
+        <!-- BUTTONS -->
+        <div class="button-group">
+            <button onclick="submitAttendance()">Submit</button>
+            <button onclick="markAllPresent()">Mark All Present</button>
+            <button onclick="clearAll()">Clear</button>
+        </div>
+    </div>
+</div>
+<script src="../js/Add-attendance.js"></script>
+<script src="../js/logout.js"></script>
+
+</body>
+</html>

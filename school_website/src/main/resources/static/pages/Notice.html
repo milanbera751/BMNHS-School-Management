@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Notice</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/loder.css">
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="sidebar">
+    <h2>ADMIN</h2>
+    <a href="../Dashboard/admin.html">Dashboard</a>
+    <a href="#">Manage Students</a>
+    <a href="#">Manage Teachers</a>
+    <a href="#">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+
+    <div class="form-container">
+        <h2>Admin - Add Notice</h2>
+        <form id="noticeForm" enctype="multipart/form-data">
+
+            <input type="text" id="title" placeholder="Title" required>
+            <textarea id="content" name="content" placeholder="Message"></textarea>
+
+            <input type="file" id="file_upload" name="file">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+</div>
+
+<script src="../js/notice.js"></script>
+<script src="../js/logout.js"></script>
+
+</body>
+</html>

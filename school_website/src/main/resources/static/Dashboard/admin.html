@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/loder.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="sidebar">
+    <h2>ADMIN</h2>
+    <a href="#">Dashboard</a>
+    <a href="#" onclick="comings()">Manage Students</a>
+    <a href="#" onclick="comings()">Manage Teachers</a>
+    <a href="#">Add Notice</a>
+    <a href="#" onclick="comings()">Reports</a>
+    <a href="../index.html" onclick="logout()">Logout</a>
+</div>
+<div class="main">
+    <h1>Admin Panel</h1>
+
+    <div class="card" >Total Students</div>
+    <div class="card">Total Teachers</div>
+    <div class="card">Total Classes</div>
+    <div class="card" onclick="window.location.href='../pages/StudentRegister.html'">Add Student</div>
+    <div class="card" onclick="window.location.href='../pages/TeacherRegister.html'">Add Teacher</div>
+    <div class="card" onclick="window.location.href='../pages/notice.html'">Add Notice</div>
+    <div class="card" onclick="window.location.href='../pages/addphoto.html'">Add Photo</div>
+    <div class="card" >View Report</div>
+</div>
+
+<script src="../js/dashboard.js"></script>
+<script>
+    checkAuth("ADMIN");
+</script>
+</body>
+</html>

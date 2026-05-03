@@ -1,0 +1,172 @@
+1.Display all employee names & their department name from EMP & DEPT tables.
+Ans:
+select Emp.Ename,Dept.Dname from Emp,Dept where Emp.Deptno=Dept.Dno;
+
+ENAME                DNAME
+-------------------- -------------------------
+WARD                 OPERATOR
+SCOTT                OPERATOR
+SMITH                CIVIL
+JONES                CIVIL
+ALLEN                MARKETING
+
+2.Show all employee whose department location is PUNE.
+Ans:
+select Emp.Ename,Dept.Dname from Emp,Dept where Emp.Deptno=Dept.Dno and Dept.Dlocation='Pune';
+
+ENAME                DNAME
+-------------------- -------------------------
+SMITH                CIVIL
+JONES                CIVIL
+
+3.Show all employee whose deptno is 20 and department location is KOLKATA.
+Ans:
+select Emp.Ename,Dept.Dname,Dept.Dlocation from Emp,Dept where Emp.Deptno=Dept.Dno and Dept.Dno=20 and Dept.Dlocation='Kolkata';
+
+no rows selected
+
+4.List the employee name, job, salary and department name for each one in the company excepts “CLERK” , sort by salary descending order.
+Ans:
+select Emp.Ename,Dept.Dname from Emp JOIN Dept on Emp.Deptno=Dept.Dno where Emp.Ejob!='CLERK' order by Emp.Esal Desc;
+
+ENAME                DNAME
+-------------------- -------------------------
+ALLEN                MARKETING
+JONES                CIVIL
+SCOTT                OPERATOR
+WARD                 OPERATOR
+
+5.List the department number where there are no employees.
+Ans: 
+select * from Emp,Dept where Emp.Deptno(+)=Dept.Dno;
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO        DNO      DNAME    	DLOCATION     DTYPE
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ---------- ---------- ------------- ----------- ---------- 
+      7369 SMITH                CLERK                 7902 20-FEB-87      10000        500         20         20 	CIVIL       Pune       Private
+      7499 ALLEN                SALESMAN              7698 20-FEB-87      80000        800         30         30 	MARKETING   Kolkata    SemiGov
+      7521 WARD                 SALESMAN              7369 22-APR-81      12000        700         10         10 	OPERATOR    Delhi      Gov
+      7566 JONES                MANAGER               7521 09-JUN-81      35000          0         20         20 	CIVIL       Pune       Private
+      7698 SCOTT                ANALYST               7566 20-FEB-87      27000        400         10         10 	OPERATOR    Delhi      Gov
+                                                                                                              50 	DEVELOPER   Chennai    Private
+                                                                                                              40 	TYPIST      Mumbai     SemiGov
+6.Display full information of employee who is earning highest salary.
+Ans:
+select * from Emp where Esal in (Select max(Esal) from Emp);
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ----------
+      7499 ALLEN                SALESMAN              7698 20-FEB-87      80000        800         30
+
+7.Display the details of second highest salary employee.
+Ans:
+select * from Emp where Esal in (Select max(Esal) from Emp where Esal<(Select max (Esal) from Emp));
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ----------
+      7566 JONES                MANAGER               7521 09-JUN-81      35000          0         20
+
+8.Find all the employees who earn the minimum Salary for each job wise in ascending order.
+Ans:
+select * from Emp where Esal in (select min(Esal) from Emp Group by Ejob) order by Esal asc;
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ----------
+      7369 SMITH                CLERK                 7902 20-FEB-87      10000        500         20
+      7521 WARD                 SALESMAN              7369 22-APR-81      12000        700         10
+      7698 SCOTT                ANALYST               7566 20-FEB-87      27000        400         10
+      7566 JONES                MANAGER               7521 09-JUN-81      35000          0         20
+
+9.Display top three earners name and salary.
+Ans:
+select * from (select Ename,Esal from Emp order by Esal desc) Emp where rownum<=3;
+
+ENAME                      ESAL
+-------------------- ----------
+ALLEN                     80000
+JONES                     35000
+SCOTT                     27000
+
+10.Display all employee names along with their manager names who (employee) has joined the company before their manager.
+Ans:
+select E1.Ename,E2.Ename from Emp E1,Emp E2 where E1.Emgr=E2.Empno and E1.Hiredate=E2.Hiredate;
+
+ENAME                ENAME
+-------------------- --------------------
+ALLEN                SCOTT
+
+select E1.Ename,E2.Ename from Emp E1,Emp E2 where E1.Emgr=E2.Empno and E1.Hiredate>E2.Hiredate;
+
+ENAME                ENAME
+-------------------- --------------------
+JONES                WARD
+SCOTT                JONES
+
+11.Display all employees who earn less than their manager.
+Ans:
+select E1.Ename,E2.Ename from Emp E1,Emp E2 where E1.Emgr=E2.Empno and E1.Emgr<E2.Esal;
+
+ENAME                ENAME
+-------------------- --------------------
+WARD                 SMITH
+JONES                WARD
+SCOTT                JONES
+ALLEN                SCOTT
+
+12.Display all employees who have no manager.
+Ans:
+select E1.Ename,E2.Ename from Emp E1,Emp E2 where E1.Emgr=E2.Empno and E1.Emgr is NULL;
+
+no rows selected
+
+13.Display employee and department info through inner join with Deptno.
+Ans:
+select * from Emp INNER JOIN Dept on Emp.Deptno=Dept.Dno;
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO        DNO DNAME                     DLOCATION  DTYPE
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ---------- ---------- ------------------------- ---------- ---------------
+      7521 WARD                 SALESMAN              7369 22-APR-81      12000        700         10         10 OPERATOR                  Delhi      Gov
+      7698 SCOTT                ANALYST               7566 20-FEB-87      27000        400         10         10 OPERATOR                  Delhi      Gov
+      7369 SMITH                CLERK                 7902 20-FEB-87      10000        500         20         20 CIVIL                     Pune       Private
+      7566 JONES                MANAGER               7521 09-JUN-81      35000          0         20         20 CIVIL                     Pune       Private
+      7499 ALLEN                SALESMAN              7698 20-FEB-87      80000        800         30         30 MARKETING                 Kolkata    SemiGov
+
+14.Display employee no, employee name, salary , department name of employee’s whose salary >25000.
+Ans:
+select Emp.Empno,Emp.Ename,Emp.Esal,Dept.Dname from Emp INNER JOIN Dept on Emp.Deptno=Dept.Dno where Emp.Esal>25000;
+
+     EMPNO ENAME                      ESAL DNAME
+---------- -------------------- ---------- -------------------------
+      7698 SCOTT                     27000 OPERATOR
+      7566 JONES                     35000 CIVIL
+      7499 ALLEN                     80000 MARKETING
+
+15.Display employee no, employee name, salary , department name of employee’s whose departmental location ‘Kolkata’.
+Ans:
+select Emp.Empno,Emp.Ename,Emp.Esal,Dept.Dname from Emp INNER JOIN Dept on Emp.Deptno=Dept.Dno where Dept.Dlocation='Kolkata';
+
+     EMPNO ENAME                      ESAL DNAME
+---------- -------------------- ---------- -------------------------
+      7499 ALLEN                     80000 MARKETING
+
+16.Display employee no,employee name,salary,department name,departmental location of employee’s whose deptno 10 and salary <15000.
+Ans: 
+select Emp.Empno,Emp.Ename,Emp.Esal,Dept.Dname,Dept.Dlocation from Emp INNER JOIN Dept on Emp.Deptno=Dept.Dno where Dept.Dno=10 and Emp.Esal<15000;
+
+     EMPNO ENAME                      ESAL DNAME                     DLOCATION
+---------- -------------------- ---------- ------------------------- ----------
+      7521 WARD                      12000 OPERATOR                  Delhi
+
+17.Display the outputs between EMP and DEPT by outer join operation.
+Ans:
+select * from Emp FULL OUTER JOIN Dept on Emp.Deptno=Dept.Dno;
+
+     EMPNO ENAME                EJOB                  EMGR HIREDATE        ESAL       COMM     DEPTNO        DNO DNAME                     DLOCATION  DTYPE
+---------- -------------------- --------------- ---------- --------- ---------- ---------- ---------- ---------- ------------------------- ---------- ---------------
+      7521 WARD                 SALESMAN              7369 22-APR-81      12000        700         10         10 OPERATOR                  Delhi      Gov
+      7698 SCOTT                ANALYST               7566 20-FEB-87      27000        400         10         10 OPERATOR                  Delhi      Gov
+      7369 SMITH                CLERK                 7902 20-FEB-87      10000        500         20         20 CIVIL                     Pune       Private
+      7566 JONES                MANAGER               7521 09-JUN-81      35000          0         20         20 CIVIL                     Pune       Private
+      7499 ALLEN                SALESMAN              7698 20-FEB-87      80000        800         30         30 MARKETING                 Kolkata    SemiGov
+                                                                                                              40 TYPIST                    Mumbai     SemiGov
+                                                                                                              50 DEVELOPER                 Chennai    Private
+

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/register.css">
+
+
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>ADMIN</h2>
+    <a href="../Dashboard/admin.html">Dashboard</a>
+    <a href="#">Manage Students</a>
+    <a href="#">Manage Teachers</a>
+    <a href="#">Add Notice</a>
+    <a href="#">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+    <h1>Add Teacher</h1>
+
+    <div class="form-box">
+
+        <input type="text" id="t_name" placeholder="Full Name">
+        <input type="text" id="t_subject" placeholder="Subject">
+        <input type="text" id="t_username" placeholder="Username">
+        <input type="text" id="t_phone" placeholder="Phone">
+        <input type="email" id="t_email" placeholder="Email">
+        <input type="Password" id="t_password" placeholder="Password">
+
+        <input type="file" id="t_image" accept="image/*"><br>
+        <button onclick="addTeacher()">Add Teacher</button>
+
+        <p id="msg"></p>
+
+    </div>
+</div>
+
+<script src="../js/dashboard.js"></script>
+<script src="../js/TeacherRegister.js"></script>
+<script src="../js/logout.js"></script>
+<script>
+    checkAuth("ADMIN");
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Marks</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/attendance.css"> </head>
+<body class="center">
+
+<div class="sidebar">
+    <h2>STUDENT</h2>
+    <a href="../Dashboard/student.html">Dashboard</a>
+    <a href="#" class="active">My Marks</a>
+    <a href="../pages/attendance.html">Attendance</a>
+    <a href="../pages/profile.html">Profile</a>
+    <a href="../pages/Notice_view.html">Notices</a>
+    <a href="../index.html" onclick="logout()">Logout</a>
+    <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+    <div class="form-container" style="width: 80%;">
+        <h1>My Academic Results</h1>
+        <hr>
+        <table id="marksTable" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Subject</th>
+                <th>Obtained</th>
+                <th>Total</th>
+                <th>Percentage</th>
+            </tr>
+            </thead>
+            <tbody id="marksBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="../js/mymarks.js"></script>
+<script src="../js/logout.js"></script>
+</body>
+</html>

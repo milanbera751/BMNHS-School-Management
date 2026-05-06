@@ -9,7 +9,6 @@ async function addStudent() {
         username: document.getElementById("username").value.trim(),
         password: document.getElementById("password").value.trim(),
         course: document.getElementById("course").value.trim(),
-        section: document.getElementById("section").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         roll: document.getElementById("roll").value.trim()
     };

@@ -1,25 +1,29 @@
-# Stage 1: Build the application
+# ==========================================
+# Stage 1: Build the application using Maven
+# ==========================================
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 
-# Copy pom.xml and source code first (leveraging Docker cache for dependencies)
+# Copy the pom.xml and source code to the container
 COPY pom.xml .
 COPY src ./src
 
-# Build the jar and skip tests to save time and resources on Render
+# Compile and package the application into a JAR file
+# skipping tests to speed up the Railway build process
 RUN mvn clean package -DskipTests
 
-# Stage 2: Run the application
-FROM openjdk:17-jdk-slim
+# ==========================================
+# Stage 2: Run the application using JRE 17
+# ==========================================
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copy the built jar file from the build stage
-# Note: Using target/school-management.jar (or your actual jar name) is safer,
-# but target/*.jar works if there is only one jar produced.
+# Copy the built JAR file from the build stage
+# Using *.jar safely copies the generated executable archive
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port Spring Boot runs on (Render defaults to 8080 or uses the PORT env variable)
+# Expose port 8080 (standard for Spring Boot)
 EXPOSE 8080
 
-# Run the jar file
+# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

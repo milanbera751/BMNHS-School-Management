@@ -36,6 +36,8 @@ public class SecurityConfig {
                 .headers(headers -> headers.cacheControl(cache->cache.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/googleb5ac4e3f227acfbe.html").permitAll()
+                        .requestMatchers("/google*.html").permitAll()
                         .requestMatchers("/api/students/attendance").permitAll()
                         .requestMatchers("/","/index.html","/favicon.ico",
                                 "/css/**","/js/**","/image/**","/Dashboard/**").permitAll()

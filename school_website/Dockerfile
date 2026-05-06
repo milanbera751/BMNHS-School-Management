@@ -22,8 +22,8 @@ WORKDIR /app
 # Using *.jar safely copies the generated executable archive
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8080 (standard for Spring Boot)
-EXPOSE 8080
+# Inform Docker that the container uses the dynamic PORT environment variable
+EXPOSE ${PORT}
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the application and force Spring Boot to use the Railway-assigned PORT
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -jar app.jar"]

@@ -35,37 +35,29 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.cacheControl(cache->cache.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Core Error and Google Verification Routing (Permit All)
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/google*.html").permitAll() // Matches any Google verification HTML file
-
-                        // 2. Static Resources & Dynamic Routes (Thymeleaf Home / Login Views)
-                        .requestMatchers("/", "/index", "/login", "/favicon.ico").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/image/**", "/Dashboard/**").permitAll()
-
-                        // 3. API & Public Endpoints
                         .requestMatchers("/api/students/attendance").permitAll()
-                        .requestMatchers("/login.html/**", "/api/teacher/staff").permitAll()
+                        .requestMatchers("/","/index.html","/favicon.ico",
+                                "/css/**","/js/**","/image/**","/Dashboard/**").permitAll()
+                        .requestMatchers("/login.html/**","/api/teacher/staff").permitAll()
                         .requestMatchers("/pages/**").permitAll()
                         .requestMatchers("/api/notices/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/gallery/**").permitAll()
-
-                        // 4. Role-based Authentication Rules
-                        .requestMatchers(HttpMethod.POST, "/api/gallery/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/api/gallery/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/gallery/**").authenticated()
                         .requestMatchers("/notice.html").hasRole("ADMIN")
-                        .requestMatchers("/StudentRegister.html", "/TeacherRegister.html").hasRole("ADMIN")
+                        .requestMatchers("/StudentRegister.html","/TeacherRegister.html").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/students/**").hasAnyRole("STUDENT", "TEACHER")
+                        .requestMatchers("/api/students/**").hasAnyRole("STUDENT","TEACHER")
                         .requestMatchers("/api/teacher/**").hasRole("TEACHER")
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
